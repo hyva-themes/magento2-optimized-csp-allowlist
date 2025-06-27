@@ -16,7 +16,7 @@ class Config
         private ScopeConfigInterface $scopeConfig
     ) {}
 
-    public function isAllowlistTuningEnabled(
+    public function isAllowlistOptimizationEnabled(
         $scope = ScopeInterface::SCOPE_STORE,
         $scopeCode = null
     ): bool

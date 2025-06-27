@@ -24,7 +24,7 @@ class UsedModules
 
     public function isActive(): bool
     {
-        return $this->active && $this->config->isAllowlistTuningEnabled();
+        return $this->active && $this->config->isAllowlistOptimizationEnabled();
     }
 
     public function deactivate(): void
@@ -45,7 +45,7 @@ class UsedModules
 
     public function getCacheId(): string
     {
-        if (! $this->config->isAllowlistTuningEnabled()) {
+        if (! $this->config->isAllowlistOptimizationEnabled()) {
             return 'csp_whitelist_config';
         }
 
