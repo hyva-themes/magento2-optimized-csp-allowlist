@@ -5,6 +5,11 @@
         <section id="csp">
             <group id="allowlist" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label">
                 <label>Allowlist optimization</label>
+                <field id="modules_disabled" type="select" showInDefault="1" showInWebsite="1" showInStore="1" translate="label comment">
+                    <label>Fully disable module allowlists</label>
+                    <comment><![CDATA[Do not load any module `csp_allowlist.xml` file, only allow the `csp_whitelist.xml` in your theme]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="optimization_enabled" type="select" showInDefault="1" showInWebsite="1" showInStore="1" translate="label comment">
                     <label>Enable domain allowlist optimization</label>
                     <comment><![CDATA[
@@ -12,6 +17,9 @@
                         Ignore all others domains.
                     ]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="modules_disabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

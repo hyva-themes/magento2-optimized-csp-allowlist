@@ -5,6 +5,7 @@
         <csp>
             <allowlist>
                 <optimization_enabled>1</optimization_enabled>
+                <modules_disabled>0</modules_disabled>
             </allowlist>
         </csp>
     </default>
