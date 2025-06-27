@@ -11,9 +11,10 @@ class UsedModules
         private readonly Config $config
     ) {}
 
-    public function harvestModule(string $module): void
+    public function collect(string $module, string $templateName= null): void
     {
-        $this->modules[$module] = true;
+        $this->modules[$module] ??= [];
+        $this->modules[$module][] =  $templateName;
     }
 
     public function activate(): void
@@ -33,6 +34,10 @@ class UsedModules
 
     public function getModules(): array
     {
+        if ($this->config->isAllowlistModulesDisabled()) {
+            return [];
+        }
+
         $modules = array_keys($this->modules);
         sort($modules, SORT_NATURAL | SORT_ASC);
         return $modules;
