@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Hyva\OptimizedCspAllowlist\Module\ModuleList">
+        <plugin name="hyva_only_used_modules"
+                type="Hyva\OptimizedCspAllowlist\Plugin\GetUsedModules"/>
+    </type>
+    <virtualType name="Hyva\OptimizedCspAllowlist\Module\Dir\Reader" type="Magento\Framework\Module\Dir\Reader">
+        <arguments>
+            <argument name="moduleList" xsi:type="object">Hyva\OptimizedCspAllowlist\Module\ModuleList</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Hyva\OptimizedCspAllowlist\Config\FileResolver" type="Magento\Framework\App\Config\FileResolver">
+        <arguments>
+            <argument name="moduleReader" xsi:type="object">Hyva\OptimizedCspAllowlist\Module\Dir\Reader</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Csp\Model\Collector\CspWhitelistXml\FileResolver">
+        <arguments>
+            <argument name="moduleFileResolver" xsi:type="object">Hyva\OptimizedCspAllowlist\Config\FileResolver</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Csp\Model\CompositePolicyCollector">
+        <arguments>
+            <argument name="collectors" xsi:type="array">
+                <item name="config" xsi:type="object" sortOrder="1">Hyva\OptimizedCspAllowlist\Model\NoopPolicyCollector</item>
+                <item name="whitelist" xsi:type="object" sortOrder="2">Hyva\OptimizedCspAllowlist\Model\NoopPolicyCollector</item>
+                <item name="controller" xsi:type="object" sortOrder="100">Hyva\OptimizedCspAllowlist\Model\NoopPolicyCollector</item>
+                <item name="dynamic" xsi:type="object" sortOrder="3">Hyva\OptimizedCspAllowlist\Model\NoopPolicyCollector</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Hyva\OptimizedCspAllowlist\Model\CompositePolicyCollector" type="Magento\Csp\Model\CompositePolicyCollector">
+        <arguments>
+            <argument name="collectors" xsi:type="array">
+                <item name="config" xsi:type="object" sortOrder="1">Magento\Csp\Model\Collector\ConfigCollector\Proxy</item>
+                <item name="whitelist" xsi:type="object" sortOrder="2">Magento\Csp\Model\Collector\CspWhitelistXmlCollector\Proxy</item>
+                <item name="controller" xsi:type="object" sortOrder="100">Magento\Csp\Model\Collector\ControllerCollector\Proxy</item>
+                <item name="dynamic" xsi:type="object" sortOrder="3">Magento\Csp\Model\Collector\DynamicCollector\Proxy</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Csp\Model\CspRenderer">
+        <arguments>
+            <argument name="collector" xsi:type="object">Hyva\OptimizedCspAllowlist\Model\CompositePolicyCollector</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\Template\File\Resolver">
+        <plugin name="hyva_aggregate_used_modules"
+                type="Hyva\OptimizedCspAllowlist\Plugin\AggregateUsedModules"/>
+    </type>
+    <type name="\Magento\Csp\Model\Collector\CspWhitelistXml\FileResolver">
+        <plugin name="hyva_selective_modules_activate"
+                type="Hyva\OptimizedCspAllowlist\Plugin\ActivateUsedModules"/>
+    </type>
+
+    <preference for="Magento\Csp\Model\Collector\CspWhitelistXml\Data"
+                type="Hyva\OptimizedCspAllowlist\Model\Collector\CspWhitelistXml\Data"/>
+</config>

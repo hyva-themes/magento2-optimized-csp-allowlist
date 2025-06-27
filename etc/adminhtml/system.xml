@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="csp">
+            <group id="allowlist" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="100" translate="label">
+                <label>Allowlist optimization</label>
+                <field id="optimization_enabled" type="select" showInDefault="1" showInWebsite="1" showInStore="1" translate="label comment">
+                    <label>Enable domain allowlist optimization</label>
+                    <comment><![CDATA[
+                        Only load module `csp_whitelist.xml` when templates files for that module are actually used on that page.
+                        Ignore all others domains.
+                    ]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
