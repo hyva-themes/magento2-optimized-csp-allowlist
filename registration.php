@@ -2,4 +2,4 @@
 
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Hyva_OptimizedAllowlist', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Hyva_OptimizedCspAllowlist', __DIR__);
