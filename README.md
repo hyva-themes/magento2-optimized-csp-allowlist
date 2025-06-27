@@ -29,3 +29,7 @@ This module has one configuration option.
 ## XSS Risks
 On a vanilla Magento 2.4.8 installation without this optimization 25 of the allowed domains can be used to inject malicious javascript into your store via callbacks.
 Enabling this module reduces this number to 0.
+
+## TODO
+- [ ] Fully disable module `csp_whitelist.xml` for modules (backend setting)
+- [ ] Add a Viewmodel to add localized domains dynamically 
