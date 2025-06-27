@@ -41,6 +41,7 @@
                 <item name="whitelist" xsi:type="object" sortOrder="2">Magento\Csp\Model\Collector\CspWhitelistXmlCollector\Proxy</item>
                 <item name="controller" xsi:type="object" sortOrder="100">Magento\Csp\Model\Collector\ControllerCollector\Proxy</item>
                 <item name="dynamic" xsi:type="object" sortOrder="3">Magento\Csp\Model\Collector\DynamicCollector\Proxy</item>
+                <item name="view_model" xsi:type="object" sortOrder="4">\Hyva\OptimizedCspAllowlist\Model\Collector\ViewModelAllowList\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
