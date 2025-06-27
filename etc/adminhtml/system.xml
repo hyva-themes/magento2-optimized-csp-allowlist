@@ -18,7 +18,7 @@
                     ]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
-                        <field id="modules_disabled">1</field>
+                        <field id="modules_disabled">0</field>
                     </depends>
                 </field>
             </group>
