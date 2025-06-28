@@ -11,10 +11,15 @@
   ],
   "autoload": {
     "files": [
-      "registration.php"
+      "src/registration.php"
     ],
     "psr-4": {
-      "Hyva\\OptimizedCspAllowlist\\": ""
+      "Hyva\\OptimizedCspAllowlist\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Hyva\\OptimizedCspAllowlist\\": "tests/"
     }
   },
   "repositories": {
