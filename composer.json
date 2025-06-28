@@ -16,5 +16,19 @@
     "psr-4": {
       "Hyva\\OptimizedCspAllowlist\\": ""
     }
+  },
+  "repositories": {
+    "mageos": {
+      "type": "composer",
+      "url": "https://mirror.mage-os.org/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^12.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "magento/composer-dependency-version-audit-plugin": false
+    }
   }
 }
