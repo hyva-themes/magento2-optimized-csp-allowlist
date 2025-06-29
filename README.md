@@ -1,6 +1,5 @@
 # Content Security Policy Optimized Allowlist
-Greatly reduce or fully disable loading of `csp_whitelist.xml` files that are included in (default) extensions.
-
+This extension optimizes the Content Security Policy (CSP) for Magento by allowing selective loading of `csp_whitelist.xml` files, reducing security risks associated with unnecessary domain allowances and potential XSS vulnerabilities.
 ## Description
 The CSP header `Content-Security-Policy` contains a list of allowed domains which are to both your frontend and backend of your Magento installation and no validation is done if these domains are actually needed to run a page. This brings certain security risks as it can be used to trigger some clever XSS attacks (more below) on your store.
 
@@ -48,51 +47,47 @@ This input is reflected on the endpoint and therefore it will trigger `alert(133
 More information about this, take a look at [renniepak/CSPBypass](https://github.com/renniepak/CSPBypass) and test your own domains.
 ## Technique
 The extension checks wetter a `.phtml` file is loaded within an extension, if this is true, the extension will be allowed to load it's whitelist.
-## Adding domains and hashes without XML
-Use ViewModel  `\Hyva\OptimizedCspAllowlist\ViewModel\Hosts::add(string $policyId, ['host.ext', ...])` to add domains without the use of `csp_whitelist.xml`.
+## Adding domains and hashes without use of XML
+You can use ViewModel  `\Hyva\OptimizedCspAllowlist\ViewModel\Hosts::add(string $policyId, ['host.ext', ...])` to add domains without the use of `csp_whitelist.xml`.
 
-This gives more flexibility as you can be very specific in which domains and/or hashes you want to load in the frontend.
+This gives more flexibility as you can be very specific on which domains or hashes you want to allow in the frontend. This also brings the possibility to have dynamic domains on multilingual stores or using a specific CDN on a specific store.
 
-The GA code for instance could include registration of the domain in the same file, making sure that only that unique script can be loaded on the site.
+For instance, the Google Analytics `.phtml` file can include registration for the domain in the same file instead of XML, making sure that only that script can be loaded on that page.
 ### Dynamic domains
-It is also possible to add custom domains, for instance when using multilingual domains, no more `*.host.ext` but allow `lang.host.ext` instead.
-### Viewmodel example default
-This example can be used in any situation with any theme.
+This will also bring the possible to add custom domains when using multilingual domains, no more `*.host.ext` but allow `lang.host.ext` instead.
+### Viewmodels for any theme
+Viewmodels can be injected in `layout.xml` for any theme.
 ```xml
 <!-- ... snap ... -->
 <block ...>
   <arguments>
-    <argument name="view_model" xsi:type="object">\Hyva\OptimizedCspAllowlist\ViewModel\Hosts</argument>
+    <argument name="csp_view_model" xsi:type="object">\Hyva\OptimizedCspAllowlist\ViewModel\Hosts</argument>
   </arguments>
 </block>
 <!-- ... /snap ... -->
 ```
-
+In your `.phtml` file you
 ```php
 <?php
 // .. snap
-$viewModel = $block->getViewModel();
-$viewModel->add('script-src', 'https://*.host.ext')
+$cspViewModel = $block->getCspViewModel();
+$cspViewModel->add('script-src', 'https://lang.host.ext')
 // .. /snap
 ```
-
-### Example when using Hyva Themes
-In Hyva the the viewmodel registry `$viewModels` can be used to load the correct Viewmodel.
-
+### Viewmodel registry when using Hyvä Themes
+When using Hyvä Themes, `$viewmodel->require(...) can be used.
 ```php
 <?php
 // .. snap
-$viewModel = $viewModels->require(\Hyva\OptimizedCspAllowlist\ViewModel\Hosts::class);
-$viewModel->add('script-src', 'https://*.host.ext')
+$cspViewModel = $viewModels->require(\Hyva\OptimizedCspAllowlist\ViewModel\Hosts::class);
+$cspViewModel->add('script-src', 'https://lang.host.ext')
 // .. /snap
 ```
-
-
 ## Notes
-During research I ran into some miss configurations in default Magento extensions, for instance. google-analytics.com is whitelisted in the adwords extension.
-Enabling google analytics in the backend will not add the header for GA, this is because the domain is registered in the google adwords extension. 🤷
-
+During research I ran into some miss configurations in default Magento extensions, for instance. `google-analytics.com` is whitelisted in the adwords extension.
+Enabling google analytics in the backend will not add the header for GA because the domain is registered in the google adwords extension. 🤷
 ## Copyright
 [Hyvä Themes](https://hyva.io/) 2025-
 ## Author
 - [Jeroen Boersma](https://www.github.com/JeroenBoersma)
+
