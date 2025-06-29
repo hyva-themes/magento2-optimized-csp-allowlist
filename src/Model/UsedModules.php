@@ -54,7 +54,7 @@ class UsedModules
     public function getCacheId(): string
     {
         if (! $this->config->isAllowlistOptimizationEnabled()) {
-            return 'csp_whitelist_config';
+            return 'csp_whitelist_config_none';
         }
 
         return 'csp_whitelist_config_' . strtolower(implode('_', $this->getModules()));
