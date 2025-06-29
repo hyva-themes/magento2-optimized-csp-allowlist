@@ -10,13 +10,13 @@ declare(strict_types=1);
 
 namespace Hyva\OptimizedCspAllowlist\ViewModel;
 
-use Hyva\OptimizedCspAllowlist\Model\Collector\ViewModelAllowList;
+use Hyva\OptimizedCspAllowlist\Model\Collector\ViewModelPolicyCollector;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
 class Hashes implements ArgumentInterface
 {
     public function __construct(
-        private readonly ViewModelAllowList $allowList,
+        private readonly ViewModelPolicyCollector $allowList,
     ) {}
 
     public function add(string $policyId, array $domains = []): void

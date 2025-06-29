@@ -13,8 +13,20 @@ namespace Hyva\OptimizedCspAllowlist\Model\Collector;
 use Magento\Csp\Api\PolicyCollectorInterface;
 use Magento\Csp\Model\Policy\FetchPolicy;
 
-class ViewModelAllowList implements PolicyCollectorInterface
+class ViewModelPolicyCollector implements PolicyCollectorInterface
 {
+    const ALLOWED_POLICIES = [
+        'child-src',
+        'connect-src',
+        'font-src',
+        'frame-src',
+        'img-src',
+        'manifest-src',
+        'media-src',
+        'object-src',
+        'script-src',
+        'style-src',
+    ];
 
     private array $policies = [];
 
@@ -54,11 +66,22 @@ class ViewModelAllowList implements PolicyCollectorInterface
 
     private function addPolicy(string $policyId, string $type, array $data): void
     {
+        $this->validatePolicy($policyId);
+
         $this->policies[$policyId] ??= [
             'hosts' => [],
             'hashes' => [],
         ];
 
         $this->policies[$policyId][$type] = array_unique(array_merge($this->policies[$policyId][$type], array_values($data)));
+    }
+
+    private function validatePolicy(string $policyId): void
+    {
+        if (!in_array($policyId, self::ALLOWED_POLICIES, true)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid policy id: "%s" is not an allowed policy in this context', $policyId)
+            );
+        }
     }
 }
