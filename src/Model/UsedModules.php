@@ -32,7 +32,13 @@ class UsedModules
 
     public function isActive(): bool
     {
-        return $this->active && $this->config->isAllowlistOptimizationEnabled();
+        return $this->active && $this->isConfigActive();
+    }
+
+    private function isConfigActive(): bool
+    {
+        return $this->config->isAllowlistOptimizationEnabled()
+            || $this->config->isAllowlistModulesDisabled();
     }
 
     public function deactivate(): void
