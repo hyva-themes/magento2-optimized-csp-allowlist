@@ -13,7 +13,6 @@ namespace Hyva\OptimizedCspAllowlist\Model;
 class UsedModules
 {
     private array $modules = [];
-    private bool $active = false;
 
     public function __construct(
         private readonly Config $config
@@ -25,25 +24,15 @@ class UsedModules
         $this->modules[$module][] =  $templateName;
     }
 
-    public function activate(): void
-    {
-        $this->active = true;
-    }
-
     public function isActive(): bool
     {
-        return $this->active && $this->isConfigActive();
+        return $this->isConfigActive();
     }
 
     private function isConfigActive(): bool
     {
         return $this->config->isAllowlistOptimizationEnabled()
             || $this->config->isAllowlistModulesDisabled();
-    }
-
-    public function deactivate(): void
-    {
-        $this->active = false;
     }
 
     public function getModules(): array

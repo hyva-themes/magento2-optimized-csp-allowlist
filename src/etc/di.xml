@@ -55,10 +55,6 @@
         <plugin name="hyva_aggregate_used_modules"
                 type="Hyva\OptimizedCspAllowlist\Plugin\AggregateUsedModules"/>
     </type>
-    <type name="\Magento\Csp\Model\Collector\CspWhitelistXml\FileResolver">
-        <plugin name="hyva_selective_modules_activate"
-                type="Hyva\OptimizedCspAllowlist\Plugin\ActivateUsedModules"/>
-    </type>
 
     <preference for="Magento\Csp\Model\Collector\CspWhitelistXml\Data"
                 type="Hyva\OptimizedCspAllowlist\Model\Collector\CspWhitelistXml\Data"/>
