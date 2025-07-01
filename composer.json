@@ -3,6 +3,7 @@
   "description": "Be more precise on which CSP domains are allowed to be loaded",
   "type": "magento2-module",
   "require": {
+    "php": ">=8.1",
     "magento/framework": "*",
     "magento/module-csp": "100.4.*"
   },
