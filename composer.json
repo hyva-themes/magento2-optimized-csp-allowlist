@@ -8,7 +8,7 @@
     "magento/module-csp": "100.4.*"
   },
   "license": [
-    "Open Software License (OSL)"
+    "BSD-3-Clause"
   ],
   "autoload": {
     "files": [
