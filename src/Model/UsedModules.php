@@ -18,7 +18,7 @@ class UsedModules
         private readonly Config $config
     ) {}
 
-    public function collect(string $module, string $templateName= null): void
+    public function collect(string $module, ?string $templateName = null): void
     {
         $this->modules[$module] ??= [];
         $this->modules[$module][] =  $templateName;
