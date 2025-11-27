@@ -10,12 +10,15 @@ declare(strict_types=1);
 
 namespace Hyva\OptimizedCspAllowlist\Model;
 
+use Magento\Framework\Module\ModuleListInterface;
+
 class UsedModules
 {
     private array $modules = [];
 
     public function __construct(
-        private readonly Config $config
+        private readonly Config $config,
+        private readonly ModuleListInterface $moduleList,
     ) {}
 
     public function collect(string $module, ?string $templateName = null): void
@@ -42,6 +45,10 @@ class UsedModules
         }
 
         $modules = array_keys($this->modules);
+
+        // Add dependencies
+        $modules += $this->getModuleDependencies($modules);
+
         sort($modules, SORT_NATURAL | SORT_ASC);
         return $modules;
     }
@@ -58,6 +65,22 @@ class UsedModules
         }
 
         return 'csp_whitelist_config_' . strtolower(implode('_', $modules));
+    }
+
+    private function getModuleDependencies(array $modules): array
+    {
+        $allModules = $this->moduleList->getAll();
+
+        $allDependencies = [];
+        foreach ($modules as $module) {
+            if (! isset($allModules[$module]['sequence'])) {
+                continue;
+            }
+
+            $allDependencies += $allModules[$module]['sequence'];
+        }
+
+        return array_unique($allDependencies);
     }
 
 }
