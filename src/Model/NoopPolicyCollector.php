@@ -12,6 +12,9 @@ namespace Hyva\OptimizedCspAllowlist\Model;
 
 use Magento\Csp\Api\PolicyCollectorInterface;
 
+/**
+ * @deprecated Unused since 1.1.0: Will be removed in the future
+ */
 class NoopPolicyCollector implements PolicyCollectorInterface
 {
 
