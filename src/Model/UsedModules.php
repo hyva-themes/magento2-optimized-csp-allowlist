@@ -78,6 +78,7 @@ class UsedModules
             }
 
             $allDependencies += $allModules[$module]['sequence'];
+            $allDependencies += $this->getModuleDependencies($allModules[$module]['sequence']);
         }
 
         return array_unique($allDependencies);
