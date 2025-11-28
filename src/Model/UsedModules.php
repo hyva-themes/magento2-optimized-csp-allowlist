@@ -47,7 +47,7 @@ class UsedModules
         $modules = array_keys($this->modules);
 
         // Add dependencies
-        $modules += $this->getModuleDependencies($modules);
+        $modules = array_unique($modules + $this->getModuleDependencies($modules));
 
         sort($modules, SORT_NATURAL | SORT_ASC);
         return $modules;
@@ -81,7 +81,7 @@ class UsedModules
             $allDependencies += $this->getModuleDependencies($allModules[$module]['sequence']);
         }
 
-        return array_unique($allDependencies);
+        return $allDependencies;
     }
 
 }
