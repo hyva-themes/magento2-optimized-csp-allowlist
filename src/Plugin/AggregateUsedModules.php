@@ -22,7 +22,7 @@ class AggregateUsedModules
     public function beforeGetTemplateFileName(Resolver $subject, $template, $params = []): array
     {
         $module = false;
-        if (str_contains($template, '::')) {
+        if (is_string($template) && str_contains($template, '::')) {
             $module = explode('::', $template, 2)[0];
         } else if ($params['module']) {
             $module = $params['module'];
