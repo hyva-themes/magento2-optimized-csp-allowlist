@@ -86,8 +86,13 @@ $cspViewModel->add('script-src', 'https://lang.host.ext')
 ## Notes
 During research I ran into some miss configurations in default Magento extensions, for instance. `google-analytics.com` is whitelisted in the adwords extension.
 Enabling google analytics in the backend will not add the header for GA because the domain is registered in the google adwords extension. 🤷
-## Copyright
-[Hyvä Themes](https://hyva.io/) 2025-
+### License
+
+This package is licensed under the **Open Software License (OSL 3.0)**.
+
+* **Copyright:** Copyright © 2020-present Hyvä Themes. All rights reserved.
+* **License Text (OSL 3.0):** The full text of the OSL 3.0 license can be found in the `LICENSE.txt` file within this package, and is also available online at [http://opensource.org/licenses/osl-3.0.php](http://opensource.org/licenses/osl-3.0.php).
+
 ## Author
 - [Jeroen Boersma](https://www.github.com/JeroenBoersma)
 
