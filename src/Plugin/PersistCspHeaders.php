@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hyva_OptimizedCspAllowlist\Cspwhitelist\Plugin;
+namespace Hyva\OptimizedCspAllowlist\Plugin;
 
 use Hyva\OptimizedCspAllowlist\Model\UsedModules;
 use Magento\Csp\Model\CspRenderer;
