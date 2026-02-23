@@ -58,6 +58,8 @@
         <arguments>
             <argument name="collector" xsi:type="object">Hyva\OptimizedCspAllowlist\Model\CompositePolicyCollector</argument>
         </arguments>
+        <plugin name="hyva_cspwhitelist_persist_csp_headers"
+                type="Hyva\OptimizedCspAllowlist\Plugin\PersistCspHeaders"/>
     </type>
 
     <type name="Magento\Framework\View\Element\Template\File\Resolver">
