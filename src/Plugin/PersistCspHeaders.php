@@ -90,39 +90,60 @@ class PersistCspHeaders
     }
 
     /**
-     * Intercept CSP rendering to persist or restore headers based on FPC state
+     * Persist or restore CSP headers after the CSP renderer has run
      *
      * Execution flow:
-     * 1. Build cache key from page identifier
-     * 2. Check if FPC hit (Built-in FPC enabled, Hyva active, no modules detected)
-     *    - Yes: Attempt to restore CSP headers from cache
-     *    - No: Proceed with normal CSP computation
-     * 3. After CSP computation, save headers to FPC for future hits
+     * 1. Return early if Built-in FPC is disabled or Hyva optimization is inactive
+     * 2. Check if FPC hit (no modules detected)
+     *    - Yes: Replace the rendered CSP headers with the cached ones
+     *    - No: Save the computed CSP headers to FPC for future hits
      *
      * Note: Plugin is inactive when using Varnish or when FPC is disabled.
      *
      * @param CspRenderer $subject CSP renderer instance (unused, required by plugin interface)
-     * @param callable $proceed Original render method
+     * @param mixed $result Result of the original render method (void)
      * @param HttpResponse $response HTTP response to apply CSP headers to
      * @return void
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function aroundRender(
+    public function afterRender(
         CspRenderer $subject,
-        callable $proceed,
+        $result,
         HttpResponse $response
     ): void {
+        if (!$this->isApplicable()) {
+            return;
+        }
+
         $cacheKey = $this->buildCacheKey();
 
         if ($this->isFpcHit()) {
-            if ($this->restoreCachedHeaders($cacheKey, $response)) {
-                return;
-            }
+            $this->restoreCachedHeaders($cacheKey, $response);
+            return;
         }
 
-        $proceed($response);
-
         $this->persistHeaders($cacheKey, $response);
+    }
+
+    /**
+     * Check if CSP headers need to be persisted or restored at all
+     *
+     * Criteria:
+     * - Full Page Cache is enabled in Magento configuration
+     * - Cache type is Built-in (not Varnish or external cache)
+     * - Hyva optimization is active (module enabled)
+     *
+     * Note: This plugin only works with Magento Built-in FPC.
+     * With Varnish or other external caching, CSP headers must be
+     * handled differently (e.g., Varnish VCL configuration).
+     *
+     * @return bool
+     */
+    private function isApplicable(): bool
+    {
+        return $this->fpcConfig->isEnabled()
+            && $this->fpcConfig->getType() === FpcConfig::BUILT_IN
+            && $this->usedModules->isActive();
     }
 
     /**
@@ -146,31 +167,21 @@ class PersistCspHeaders
     /**
      * Check if current request is a Full Page Cache hit
      *
-     * Criteria:
-     * - Full Page Cache is enabled in Magento configuration
-     * - Cache type is Built-in (not Varnish or external cache)
-     * - Hyva optimization is active (module enabled)
-     * - No modules detected (empty modules list)
-     *
      * Empty modules list indicates templates were not rendered,
      * which only happens on FPC hits.
      *
-     * Note: This plugin only works with Magento Built-in FPC.
-     * With Varnish or other external caching, CSP headers must be
-     * handled differently (e.g., Varnish VCL configuration).
-     *
-     * @return bool True if FPC hit, false if cache miss, FPC disabled, or external cache
+     * @return bool True if FPC hit, false if cache miss
      */
     private function isFpcHit(): bool
     {
-        return $this->fpcConfig->isEnabled()
-            && $this->fpcConfig->getType() === FpcConfig::BUILT_IN
-            && $this->usedModules->isActive()
-            && empty($this->usedModules->getModules());
+        return empty($this->usedModules->getModules());
     }
 
     /**
      * Restore cached CSP headers to HTTP response
+     *
+     * Replaces the CSP headers set by the renderer, so the response only
+     * contains the headers as they were computed on the original cache miss.
      *
      * @param string $cacheKey Cache key to load headers from
      * @param HttpResponse $response HTTP response to apply headers to
@@ -188,6 +199,10 @@ class PersistCspHeaders
 
         if (empty($headers)) {
             return false;
+        }
+
+        foreach (self::CSP_HEADERS as $name) {
+            $response->clearHeader($name);
         }
 
         foreach ($headers as $name => $value) {
