@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Hyva\OptimizedCspAllowlist\Model;
 
+use Magento\Framework\Module\ModuleListInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -16,6 +17,7 @@ class UsedModulesTest extends TestCase
 {
 
     private Config|MockObject $config;
+    private ModuleListInterface|MockObject $moduleList;
     private UsedModules $usedModules;
 
     protected function setUp(): void
@@ -27,8 +29,18 @@ class UsedModulesTest extends TestCase
                 'isAllowlistModulesDisabled',
             ]
         );
+        $this->moduleList = $this->createMock(ModuleListInterface::class);
+        $this->moduleList->method('getAll')->willReturn([
+            'Vendor_Module' => ['name' => 'Vendor_Module', 'sequence' => []],
+            'Vendor_OtherModule' => ['name' => 'Vendor_OtherModule', 'sequence' => []],
+            'Vendor_Child' => ['name' => 'Vendor_Child', 'sequence' => ['Vendor_Parent', 'Vendor_Sibling']],
+            'Vendor_Parent' => ['name' => 'Vendor_Parent', 'sequence' => ['Vendor_Grandparent']],
+            'Vendor_Sibling' => ['name' => 'Vendor_Sibling', 'sequence' => []],
+            'Vendor_Grandparent' => ['name' => 'Vendor_Grandparent', 'sequence' => []],
+        ]);
         $this->usedModules  = new UsedModules(
-            $this->config
+            $this->config,
+            $this->moduleList
         );
     }
 
@@ -115,5 +127,49 @@ class UsedModulesTest extends TestCase
 
         $usedModules->collect('Vendor_OtherModule');
         $this->assertSame('csp_whitelist_config_vendor_module_vendor_othermodule', $usedModules->getCacheId());
+    }
+
+    public function testGetModulesShouldIncludeSequenceDependenciesOfUsedModules(): void
+    {
+        $this->config->method('isAllowlistOptimizationEnabled')->willReturn(true);
+        $this->config->method('isAllowlistModulesDisabled')->willReturn(false);
+
+        $this->usedModules->collect('Vendor_Child');
+
+        $this->assertSame(
+            ['Vendor_Child', 'Vendor_Grandparent', 'Vendor_Parent', 'Vendor_Sibling'],
+            $this->usedModules->getModules(),
+            'Direct and nested sequence dependencies should be included'
+        );
+    }
+
+    public function testGetModulesShouldKeepDependenciesWhenMoreModulesAreUsedThanDependenciesExist(): void
+    {
+        $this->config->method('isAllowlistOptimizationEnabled')->willReturn(true);
+        $this->config->method('isAllowlistModulesDisabled')->willReturn(false);
+
+        $this->usedModules->collect('Vendor_Module');
+        $this->usedModules->collect('Vendor_OtherModule');
+        $this->usedModules->collect('Vendor_Sibling');
+        $this->usedModules->collect('Vendor_Child');
+
+        $this->assertSame(
+            ['Vendor_Child', 'Vendor_Grandparent', 'Vendor_Module', 'Vendor_OtherModule', 'Vendor_Parent', 'Vendor_Sibling'],
+            $this->usedModules->getModules(),
+            'Dependencies must not be dropped because a used module already occupies the same list index'
+        );
+    }
+
+    public function testGetCacheIdShouldContainSequenceDependencies(): void
+    {
+        $this->config->method('isAllowlistOptimizationEnabled')->willReturn(true);
+        $this->config->method('isAllowlistModulesDisabled')->willReturn(false);
+
+        $this->usedModules->collect('Vendor_Child');
+
+        $this->assertSame(
+            'csp_whitelist_config_vendor_child_vendor_grandparent_vendor_parent_vendor_sibling',
+            $this->usedModules->getCacheId()
+        );
     }
 }
